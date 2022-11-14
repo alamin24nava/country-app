@@ -4,41 +4,50 @@ import { useEffect, useState } from 'react';
 import ContentLoader from './ContentLoader'
 import Country from '../Country'
 
+const url = 'https://restcountries.com/v3.1/all'
 
 export default function Countries() {
     const [countries, setCountries] = useState(null)
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState(null)
-
-    useEffect(() => {
-        fetch('https://restcountries.com/v3.1/all')
-        .then((res) => {
-            if (!res.ok) {
-                throw Error('Data Fetch Error')
-            }
-            return res.json()
-        })
-        .then((data) => {
-            setIsLoading(false)
-            setError(false)
+    const [filterdCountries, setFilterdCountries] = useState(countries)
+    const dataFetch = async (url) => {
+        setIsLoading(true)
+        try {
+            const res = await fetch(url)
+            const data = await res.json()
             setCountries(data)
-            console.log(countries)
-        })
-        .catch((error) => {
-            setError(error)
+            setFilterdCountries(data)
             setIsLoading(false)
-        })
+            setError(null)
+        } catch (error) {
+            setIsLoading(false)
+            setError(error)
+            console.log(error)
+        }
+    }
+    useEffect(() => {
+        dataFetch(url)
     }, [])
-  return (
-    <div className='container'>
-            <h2 className='text-center w-100 mt-3'>Country App</h2>
+
+    const handleRemove = (data) => {
+        const filter = filterdCountries.filter((country) => country.name.common !== data)
+        setFilterdCountries(filter)
+    }
+    return (
+        <div className='container'>
+            <h2 className='text-center w-100 mt-3 pb-3
+            '>Country App</h2>
+            <div class="mb-3 w-50 m-auto">
+                <input type="text" class="form-control" id="" placeholder="Search Country" />
+            </div>
             <div className="row mt-5">
-                {error && <p>{error.message}</p>}
                 {isLoading && <ContentLoader />}
-                {countries && countries.map((country, index) => (
-                    <Country country={country} key={index} />
+                {error && <p>{error.message}</p>}
+                {countries && filterdCountries.map((country, index) => (
+                    <Country onData={handleRemove} country={country} key={index} />
                 ))}
             </div>
         </div>
-  )
+    )
 }
