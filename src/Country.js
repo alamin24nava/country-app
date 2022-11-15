@@ -7,7 +7,7 @@ export default function Country(props) {
     }
     return (
         <div className='col-3 mb-4'>
-            <div className="card">
+            <div className={'card' +' '+ country.name.common.toLowerCase()}>
                 <div className='country-flag-wrap'><img src={country.flags.png} className="card-img-top h-100" alt={country.name.common} /></div>
                 <div className="card-body">
                     <h6 className="card-title">Name: {country.name.common}</h6>

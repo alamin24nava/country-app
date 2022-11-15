@@ -3,11 +3,12 @@ import { useEffect, useState } from 'react';
 
 import ContentLoader from './ContentLoader'
 import Country from '../Country'
+import SearchCountry from './SearchCountry';
 
 const url = 'https://restcountries.com/v3.1/all'
 
 export default function Countries() {
-    const [countries, setCountries] = useState(null)
+    const [countries, setCountries] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState(null)
     const [filterdCountries, setFilterdCountries] = useState(countries)
@@ -34,13 +35,19 @@ export default function Countries() {
         const filter = filterdCountries.filter((country) => country.name.common !== data)
         setFilterdCountries(filter)
     }
+    const hamdleSearch = (searchValue) =>{
+        let value = searchValue.toLowerCase();
+        const newCountries = countries.filter((country) => {
+            const countryName = country.name.common.toLowerCase();
+            return countryName.startsWith(value)
+        })
+        setFilterdCountries(newCountries)
+    }
     return (
         <div className='container'>
             <h2 className='text-center w-100 mt-3 pb-3
             '>Country App</h2>
-            <div class="mb-3 w-50 m-auto">
-                <input type="text" class="form-control" id="" placeholder="Search Country" />
-            </div>
+            <SearchCountry onSearch = {hamdleSearch} />
             <div className="row mt-5">
                 {isLoading && <ContentLoader />}
                 {error && <p>{error.message}</p>}
